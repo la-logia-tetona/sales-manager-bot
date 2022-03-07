@@ -11,7 +11,7 @@ const client = new Client({
 //const client = new Discord.Client({ disableMentions: 'everyone' });
 // https://www.npmjs.com/package/@replit/database
 const db = new Database();
-const channelId = '950442338671554624'
+const channelId = process.env.channelId
 
 // const keep_alive = require('./keep_alive.js')
 
