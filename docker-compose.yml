@@ -1,0 +1,14 @@
+version: '3'
+services:
+  node:
+    env_file: docker/development/.env
+    build:
+      context: .
+      dockerfile: docker/development/node/Dockerfile
+      args:
+        NODE_VERSION: "16"
+        UID: 1000
+        GID: 1000
+    volumes:
+      - .:/app
+    command: sh -c "node index.js"
