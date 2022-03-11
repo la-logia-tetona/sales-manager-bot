@@ -31,12 +31,15 @@ client.on('interactionCreate', async (interaction) => {
   
   let author = interaction.member
   let threadId = interaction.customId
+  // let's check if we can find the thread
   let thread = interaction.channel.threads.cache.find((th, id) => id === threadId )
   let saleName = `Sale#${threadId}`
 
   if (thread) {
+    // we don't want to bother users if they're already members of the thread
     let isAlreadyMember = await thread.members.resolveId(author)
 
+    // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
       await thread.send(`Check out this sale, ${interaction.member}!`)
 
@@ -51,6 +54,7 @@ client.on('interactionCreate', async (interaction) => {
       })
     }
   } else {
+    // TODO: add datetime
     console.log(`ERROR: ${saleName} not found!`)
 
     await interaction.reply({
@@ -76,6 +80,7 @@ client.on('interactionCreate', async (interaction) => {
   let { commandName, options } = interaction
 
   if (commandName === 'sale') {    
+    // TODO: can we limit the description length?
     let description = options.getString('description')
     let link = options.getString('link')
   
@@ -92,6 +97,7 @@ client.on('interactionCreate', async (interaction) => {
     let thread = await channel.threads.create({
       name: threadName,
       autoArchiveDuration: 60,
+      // TODO: should this be set with an env variable?
       // type: 'GUILD_PRIVATE_THREAD',
       type: 'GUILD_PUBLIC_THREAD',
       reason: `${description}`,
