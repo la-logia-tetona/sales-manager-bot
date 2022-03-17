@@ -5,10 +5,9 @@ If you want to use this file, please follow [this guide](https://github.com/todo
 
 ## To Do
   - [ ] check what happens when an user shares an attachment
-  - [ ] check what happens when an user shares an attachment
-  - [ ] add public and private fields
   - [ ] try multi-line or embed messages
   - [ ] parse links and remove them from public
+  - [ ] check if a localeService instance is really needed
 
 ## In Progress
 
@@ -17,4 +16,5 @@ If you want to use this file, please follow [this guide](https://github.com/todo
   - [✓] add env variables for autoArchive, threadType and locale
   - [✓] change invitable option position
   - [✓] simplify sale text
+  - [✓] add public and private fields
   

@@ -14,9 +14,14 @@ const { MessageActionRow, MessageButton } = require("discord.js");
 // https://www.npmjs.com/package/i18n
 const i18n = require("./i18n.config.js");
 const LocaleService = require("./services/localeService");
-const localeService = new LocaleService(i18n);
 
+const localeService = new LocaleService(i18n);
 localeService.setLocale(process.env.locale || "en");
+
+// FIXME this needs to be refactored
+const t = (string, args = undefined) => {
+  return localeService.translate(string, args);
+};
 
 const client = new Client({
   intents: [
@@ -41,10 +46,7 @@ let channel;
 
 client.once("ready", async () => {
   console.log(
-    localeService.translate(
-      "Hello! I'm alive! I'm logged in as %s",
-      client.user.tag
-    )
+    t("Hello! I'm alive! I'm logged in as {{name}}", { name: client.user.tag })
   );
   channel = await client.channels.fetch(channelId);
 });
@@ -54,11 +56,14 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
 
   let author = interaction.member;
-  let threadId = interaction.customId;
+  let authorMention = `\<@${author.user.id}\>`;
+
   // let's check if we can find the thread
+  let threadId = interaction.customId;
   let thread = interaction.channel.threads.cache.find(
     (th, id) => id === threadId
   );
+  
   let saleName = `Sale#${threadId}`;
 
   if (thread) {
@@ -67,45 +72,34 @@ client.on("interactionCreate", async (interaction) => {
 
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
-      console.log(
-        localeService.translate(
-          "Hello! I'm alive! I'm logged in as %s",
-          client.user.tag
-        )
-      );
-      // await thread.send(`Check out this sale, ${interaction.member}!`)
       await thread.send(
-        localeService.translate("Check out this sale, %s!", interaction.member)
+        t("Check out this sale, {{{user}}}!", { user: authorMention })
       );
 
       await interaction.reply({
-        // content: `You have been granted access to ${saleName}`,
-        content: localeService.translate(
-          "You have been granted access to %s",
-          saleName
-        ),
+        content: t("You have been granted access to {{threadName}}", {
+          threadName: saleName,
+        }),
         ephemeral: true,
       });
     } else {
       await interaction.reply({
-        content: localeService.translate(
-          "You are already suscribed to %s",
-          saleName
-        ),
+        content: t("You are already suscribed to {{threadName}}", {
+          threadName: saleName,
+        }),
         ephemeral: true,
       });
     }
   } else {
     // TODO: add datetime
-    console.log(localeService.translate(
-      "ERROR: %s not found!",
-      saleName
-    ));
+    console.log(
+      t("ERROR: {{threadName}} not found!", { threadName: saleName })
+    );
 
     await interaction.reply({
-      content: localeService.translate(
-        "%s not found. Please contact the guild's administrators",
-        saleName
+      content: t(
+        "{{threadName}} not found. Please contact the guild's administrators",
+        { threadName: saleName }
       ),
       ephemeral: true,
     });
@@ -119,23 +113,23 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
   let author = interaction.member;
+  let authorMention = `\<@${author.user.id}\>`;
 
   if (interaction.channel.isThread()) {
     await interaction.reply(
-      localeService.translate(
-        "Sorry %s, I'm not allowed to listen to threads",
-        author
-      )
+      t("Sorry {{{user}}}, I'm not allowed to listen to threads", {
+        user: authorMention,
+      })
     );
     return;
   }
 
   let { commandName, options } = interaction;
 
-  if (commandName === "sale") {
+  if (commandName === t("com.sale.name")) {
     // TODO: can we limit the description length?
-    let description = options.getString("description");
-    let link = options.getString("link");
+    let public = options.getString(t("com.sale.options.public.name"));
+    let private = options.getString(t("com.sale.options.private.name"));
 
     // if (link && !validUrl.isWebUri(link)) {
     //   await interaction.reply({
@@ -146,30 +140,31 @@ client.on("interactionCreate", async (interaction) => {
     // }
 
     let threadName =
-      description.length <= 48
-        ? description
-        : description.substring(0, 45) + "...";
+      public.length <= 48 ? public : public.substring(0, 45) + "...";
 
     let thread = await channel.threads.create({
       name: threadName,
       autoArchiveDuration: process.env.autoArchiveDuration || 60,
       type: process.env.threadType || "GUILD_PUBLIC_THREAD",
-      reason: `${description}`,
+      reason: `${public}`,
       invitable: false,
     });
 
     if (thread) {
-      await thread.send(`${description} ${link}`);
+      await thread.send(`${public}\r\n${private}`);
 
       let firstRow = new MessageActionRow().addComponents(
         new MessageButton()
           .setCustomId(thread.id)
-          .setLabel(localeService.translate("View Sale"))
+          .setLabel(t("View Sale"))
           .setStyle("PRIMARY")
       );
 
       await interaction.reply({
-        content: localeService.translate("**%s**. Thank you %s for sharing!", threadName, author),
+        content: t("**{{text}}**. Thank you {{{user}}} for sharing!", {
+          text: threadName,
+          user: authorMention,
+        }),
         components: [firstRow],
       });
     } else {
