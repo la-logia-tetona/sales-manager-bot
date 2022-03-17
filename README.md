@@ -10,6 +10,9 @@ If you want to edit this file, please follow up the recommendations from this [M
 | clientId | The ID to identify your bot, please check *Useful Links / How to get a Discord Bot Token*. | yes |
 | guildId | The ID to identify your server, you can get it from your Discord app. | yes |
 | channelId | The ID of the channel where you want the bot to work, you can get it from your Discord app. | yes |
+| autoArchiveDuration | The time in minutes that the thread will be keep active. *Default value: 60* | no |
+| threadType | The type of thread that will be created. You can set *GUILD_PRIVATE_THREAD* if your guild is boosted. *Default value: GUILD_PUBLIC_THREAD* | no |
+| locale | The locale you want to use for your bot's messages. Available locales: [en, es]. *Default value: en* | no |
 
 ## Scopes and Permissions
 You must configure some scopes and permissions to make this bot work. In your *Discord Developer Portal / OAuth2 / URL Generator* you need to at least enable the **bot** and **applications.commands** scopes.

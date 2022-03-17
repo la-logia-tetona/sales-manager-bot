@@ -1,0 +1,11 @@
+{
+	"Hello! I'm alive! I'm logged in as %s": "¡Hola! ¡Estoy vivo! Estoy autenticado como %s",
+  "Check out this sale, %s!": "¡Mirá esta oferta, %s",
+  "You have been granted access to %s": "Has obtenido acceso a %s",
+  "You are already suscribed to %s": "Ya estás suscrito a %s",
+  "ERROR: %s not found!": "ERROR: ¡%s no encontrado!",
+  "%s not found. Please contact the guild's administrators": "%s no encontrado. Por favor, comunicate con los administradores del servidor.",
+  "Sorry %s, I'm not allowed to listen to threads": "Lo siento %s, no tengo permitido responder desde hilos",
+  "View Sale": "Ver Oferta",
+  "**%s**. Thank you %s for sharing!": "**%s**. ¡Gracias %s por compartir!"
+}
