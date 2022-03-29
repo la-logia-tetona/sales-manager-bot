@@ -12,7 +12,7 @@ If you want to edit this file, please follow up the recommendations from this [M
 
 ## How to setup this application
 
-## Secrets
+## Secrets / Environment variables
 | key | description | required? |
 | --- | ----------- | --------- |
 | token | The key to control your bot, please check *Useful Links / How to get a Discord Bot Token*. | yes |
@@ -28,11 +28,15 @@ You must configure some scopes and permissions to make this bot work. In your *D
 
 ### Docker
 ```bash
+#!/bin/sh
+
 docker run --env-file production.env ghcr.io/la-logia-tetona/sales-manager-bot
 ```
 
 ### Docker Compose
 ```yaml
+# docker-compose.yml
+
 version: '3'
 services:
   node:
