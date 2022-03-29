@@ -1,6 +1,6 @@
 /node_modules
 
-docker/development/.env
+/docker/development/.env
 !docker/development/.env.example
-docker/production/.env
+/docker/production/.env
 !docker/production/.env.example
