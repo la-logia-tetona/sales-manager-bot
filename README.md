@@ -1,7 +1,16 @@
 # Sales Manager Bot
 
+## Quick reference
+* **Maintained by** [daniffig](https://github.com/daniffig/)
+* **Where to get help?** You can [submit your ticket](https://github.com/la-logia-tetona/sales-manager-bot/issues) as an issue.
+
+## What is Sales Manager Bot?
+Sales Manager Bot is a Discord bot that allows you to manage and secure contents shared by the users of your guild on certain channels. It was developed by requirement of La Logia Tetona to provide a solution to leakage of sales' information. You may fork and modify this project to suit your needs.
+
 ## About this file
 If you want to edit this file, please follow up the recommendations from this [Markdown Cheat Sheet](https://www.markdownguide.org/cheat-sheet/). And if you want to commit or collaborate with this project, please add good git commit messages [following this guide](https://www.freecodecamp.org/news/how-to-write-better-git-commit-messages/).
+
+## How to setup this application
 
 ## Secrets
 | key | description | required? |
@@ -16,6 +25,34 @@ If you want to edit this file, please follow up the recommendations from this [M
 
 ## Scopes and Permissions
 You must configure some scopes and permissions to make this bot work. In your *Discord Developer Portal / OAuth2 / URL Generator* you need to at least enable the **bot** and **applications.commands** scopes.
+
+### Docker
+```bash
+docker run --env-file production.env ghcr.io/la-logia-tetona/sales-manager-bot
+```
+
+### Docker Compose
+```yaml
+version: '3'
+services:
+  node:
+    image: ghcr.io/la-logia-tetona/sales-manager-bot:latest
+    env_file: production.env
+```
+
+In both cases we make use of a *production.env* file. Here you must set the env variables described in the ***Secrets*** section of this document. To ease this step we provide you with the template below.
+
+```
+# production.env
+
+token=
+clientId=
+guildId=
+channelId=
+autoArchiveDuration=
+threadType=
+locale=
+```
 
 ## Useful links
 * [Discord Developer Portal](https://discord.com/developers/applications)
