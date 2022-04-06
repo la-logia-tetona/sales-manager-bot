@@ -26,7 +26,7 @@ const commands = [
       option
         .setName(t("com.sale.options.private.name"))
         .setDescription(t("com.sale.options.private.desc"))
-        .setRequired(true)
+        .setRequired(false)
     ),
 ].map((command) => command.toJSON());
 

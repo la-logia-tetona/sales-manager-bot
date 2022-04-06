@@ -1,15 +1,14 @@
 /**
  * SalesManager Discord Bot
- * version: 0.2.0
+ * version: 0.4.0
  * authors: la-logia-tetona
- * last update: 20220317150000
+ * last update: 2022-04-06T12:00:00-03:00
  */
 
-const Database = require("@replit/database");
-const validUrl = require("valid-url");
 
-const { Client, Intents, MessageEmbed } = require("discord.js");
+const { Client, Intents } = require("discord.js");
 const { MessageActionRow, MessageButton } = require("discord.js");
+const moment = require("moment-timezone");
 
 // https://www.npmjs.com/package/i18n
 const i18n = require("./i18n.config.js");
@@ -35,7 +34,7 @@ const client = new Client({
 
 //const client = new Discord.Client({ disableMentions: 'everyone' });
 // https://www.npmjs.com/package/@replit/database
-const db = new Database();
+// const db = new Database();
 const channelId = process.env.channelId;
 
 // const keep_alive = require('./keep_alive.js')
@@ -45,9 +44,8 @@ let channel;
 // https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
 
 client.once("ready", async () => {
-  console.log(
-    t("Hello! I'm alive! I'm logged in as {{name}}", { name: client.user.tag })
-  );
+  console.log(`Hello! I'm alive! I'm logged in as ${client.user.tag}`);
+
   channel = await client.channels.fetch(channelId);
 });
 
@@ -63,7 +61,7 @@ client.on("interactionCreate", async (interaction) => {
   let thread = interaction.channel.threads.cache.find(
     (th, id) => id === threadId
   );
-  
+
   let saleName = `Sale#${threadId}`;
 
   if (thread) {
@@ -72,9 +70,12 @@ client.on("interactionCreate", async (interaction) => {
 
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
-      await thread.send(
-        t("Check out this sale, {{{user}}}!", { user: authorMention })
-      );
+      await addMember(thread, author.user);
+
+      // await thread.send({
+      //   content: t("Check out this sale, {{{user}}}!", { user: authorMention }),
+      //   ephemeral: true,
+      // });
 
       await interaction.reply({
         content: t("You have been granted access to {{threadName}}", {
@@ -92,9 +93,7 @@ client.on("interactionCreate", async (interaction) => {
     }
   } else {
     // TODO: add datetime
-    console.log(
-      t("ERROR: {{threadName}} not found!", { threadName: saleName })
-    );
+    console.log(`[${Date.now()}] ERROR: ${saleName} not found!`);
 
     await interaction.reply({
       content: t(
@@ -131,14 +130,6 @@ client.on("interactionCreate", async (interaction) => {
     let public = options.getString(t("com.sale.options.public.name"));
     let private = options.getString(t("com.sale.options.private.name"));
 
-    // if (link && !validUrl.isWebUri(link)) {
-    //   await interaction.reply({
-    //     content: 'Please, if you want to submit a link check out it is a valid web URI. For example, <https://discord.com> is a valid web URI.',
-    //   })
-
-    //   return
-    // }
-
     let threadName =
       public.length <= 48 ? public : public.substring(0, 45) + "...";
 
@@ -151,7 +142,17 @@ client.on("interactionCreate", async (interaction) => {
     });
 
     if (thread) {
-      await thread.send(`${public}\r\n${private}`);
+      let firstMessage = `${public}`
+
+      if (private) {
+        firstMessage += `\r\n${private}`
+      }
+
+      firstMessage += "\r\n\r\nMembers:"
+
+      await thread.send(firstMessage)
+      
+      await addMember(thread, author.user);
 
       let firstRow = new MessageActionRow().addComponents(
         new MessageButton()
@@ -171,5 +172,22 @@ client.on("interactionCreate", async (interaction) => {
     }
   }
 });
+
+
+const addMember = async (thread, user) => {
+  let now = moment(Date.now()).tz("America/Argentina/Buenos_Aires").format();
+  let firstMessage = await getFirstMessage(thread);
+
+  await firstMessage.edit({
+    content: `${firstMessage.content}\r\n\<@${user.id}\> joined at ${now}`,
+  });
+};
+
+const getFirstMessage = async (thread) => {
+  let messages = await thread.messages.fetch({ limit: 1 });
+  let [firstMessage] = messages.values();
+
+  return firstMessage;
+};
 
 client.login(process.env.token);

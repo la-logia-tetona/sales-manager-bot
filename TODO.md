@@ -4,7 +4,6 @@
 If you want to use this file, please follow [this guide](https://github.com/todomd/todo.md)
 
 ## To Do
-  - [ ] check what happens when an user shares an attachment
   - [ ] try multi-line or embed messages
   - [ ] parse links and remove them from public
   - [ ] check if a localeService instance is really needed
@@ -17,4 +16,5 @@ If you want to use this file, please follow [this guide](https://github.com/todo
   - [✓] change invitable option position
   - [✓] simplify sale text
   - [✓] add public and private fields
+  - [✓] check what happens when an user shares an attachment (spoiler: it doesn't work)
   
