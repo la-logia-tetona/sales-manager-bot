@@ -8,7 +8,7 @@ on:
 
 env:
   IMAGE_NAME: "ghcr.io/${{ github.repository }}"
-  VERSION: "0.3.0"
+  VERSION: "0.4.0"
 
 jobs:
 
