@@ -70,17 +70,21 @@ client.on("interactionCreate", async (interaction) => {
 
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
-      await addMember(thread, firstMessageId, author.user);
+      let couldAddMember = await addMember(thread, firstMessageId, author.user);
 
       // await thread.send({
       //   content: t("Check out this sale, {{{user}}}!", { user: authorMention }),
       //   ephemeral: true,
       // });
 
+      let message = couldAddMember
+        ? t("You have been granted access to {{threadName}}", {
+            threadName: saleName,
+          })
+        : "Sorry, an error has occured. Please notify your guild's administrators.";
+
       await interaction.reply({
-        content: t("You have been granted access to {{threadName}}", {
-          threadName: saleName,
-        }),
+        content: message,
         ephemeral: true,
       });
     } else {
@@ -92,8 +96,9 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
   } else {
-    // TODO: add datetime
-    console.log(`[${Date.now()}] ERROR: ${saleName} not found!`);
+    let now = moment(Date.now()).tz("America/Argentina/Buenos_Aires").format();
+
+    console.log(`[${now}] ERROR: ${saleName} not found!`);
 
     await interaction.reply({
       content: t(
@@ -176,12 +181,23 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 const addMember = async (thread, firstMessageId, user) => {
-  let now = moment(Date.now()).tz("America/Argentina/Buenos_Aires").format();
-  let firstMessage = await thread.messages.fetch(firstMessageId);
+  try {
+    let now = moment(Date.now()).tz("America/Argentina/Buenos_Aires").format();
+    let firstMessage = await thread.messages.fetch(firstMessageId, {
+      cache: false,
+      force: true,
+    });
 
-  await firstMessage.edit({
-    content: `${firstMessage.content}\r\n\<@${user.id}\> joined at ${now}`,
-  });
+    await firstMessage.edit({
+      content: `${firstMessage.content}\r\n\<@${user.id}\> joined at ${now}`,
+    });
+
+    return true;
+  } catch (e) {
+    console.log(e);
+
+    return false;
+  }
 };
 
 client.login(process.env.token);
