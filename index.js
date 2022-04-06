@@ -5,7 +5,6 @@
  * last update: 2022-04-06T12:00:00-03:00
  */
 
-
 const { Client, Intents } = require("discord.js");
 const { MessageActionRow, MessageButton } = require("discord.js");
 const moment = require("moment-timezone");
@@ -57,7 +56,8 @@ client.on("interactionCreate", async (interaction) => {
   let authorMention = `\<@${author.user.id}\>`;
 
   // let's check if we can find the thread
-  let threadId = interaction.customId;
+  // let threadId = interaction.customId;
+  let [threadId, firstMessageId] = interaction.customId.split("#");
   let thread = interaction.channel.threads.cache.find(
     (th, id) => id === threadId
   );
@@ -70,7 +70,7 @@ client.on("interactionCreate", async (interaction) => {
 
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
-      await addMember(thread, author.user);
+      await addMember(thread, firstMessageId, author.user);
 
       // await thread.send({
       //   content: t("Check out this sale, {{{user}}}!", { user: authorMention }),
@@ -142,21 +142,23 @@ client.on("interactionCreate", async (interaction) => {
     });
 
     if (thread) {
-      let firstMessage = `${public}`
+      let firstMessage = `${public}`;
 
       if (private) {
-        firstMessage += `\r\n${private}`
+        firstMessage += `\r\n${private}`;
       }
 
-      firstMessage += "\r\n\r\nMembers:"
+      firstMessage += "\r\n\r\nMembers:";
 
-      await thread.send(firstMessage)
-      
-      await addMember(thread, author.user);
+      firstMessage = await thread.send(firstMessage);
+
+      await addMember(thread, firstMessage.id, author.user);
+
+      let customId = `${thread.id}#${firstMessage.id}`;
 
       let firstRow = new MessageActionRow().addComponents(
         new MessageButton()
-          .setCustomId(thread.id)
+          .setCustomId(customId)
           .setLabel(t("View Sale"))
           .setStyle("PRIMARY")
       );
@@ -173,21 +175,13 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-
-const addMember = async (thread, user) => {
+const addMember = async (thread, firstMessageId, user) => {
   let now = moment(Date.now()).tz("America/Argentina/Buenos_Aires").format();
-  let firstMessage = await getFirstMessage(thread);
+  let firstMessage = await thread.messages.fetch(firstMessageId);
 
   await firstMessage.edit({
     content: `${firstMessage.content}\r\n\<@${user.id}\> joined at ${now}`,
   });
-};
-
-const getFirstMessage = async (thread) => {
-  let messages = await thread.messages.fetch({ limit: 1 });
-  let [firstMessage] = messages.values();
-
-  return firstMessage;
 };
 
 client.login(process.env.token);
