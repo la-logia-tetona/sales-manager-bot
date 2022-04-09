@@ -9,7 +9,6 @@ const VERSION = "v0.5.0";
 
 const { Client, Intents, Util } = require("discord.js");
 const { MessageActionRow, MessageButton } = require("discord.js");
-const _ = require("underscore");
 const _string = require("underscore.string");
 
 // https://www.npmjs.com/package/i18n
