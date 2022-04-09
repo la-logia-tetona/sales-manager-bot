@@ -2,6 +2,9 @@ ARG NODE_VERSION="16"
 
 FROM node:${NODE_VERSION}-alpine
 
+LABEL org.opencontainers.image.description "Sales Manager Bot is a Discord bot that allows you to manage and secure contents shared by the users of your guild on certain channels."
+LABEL org.opencontainers.image.source "https://github.com/la-logia-tetona/sales-manager-bot"
+
 ARG USR="node"
 ARG GRP="node"
 ARG UID="1000"
