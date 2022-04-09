@@ -5,10 +5,11 @@
  * last update: 2022-04-06T12:00:00-03:00
  */
 
-const VERSION = "v0.5.0";
+const VERSION = "v0.4.1";
 
 const { Client, Intents, Util } = require("discord.js");
 const { MessageActionRow, MessageButton } = require("discord.js");
+const moment = require("moment-timezone");
 const _ = require("underscore");
 const _string = require("underscore.string");
 
@@ -16,8 +17,7 @@ const _string = require("underscore.string");
 const i18n = require("./i18n.config.js");
 const LocaleService = require("./services/localeService");
 
-const AccessLog = require("./helpers/AccessLog");
-const Clock = require("./helpers/Clock");
+const AccessLogMessage = require('./helpers/AccessLogMessage')
 
 const localeService = new LocaleService(i18n);
 localeService.setLocale(process.env.locale || "en");
@@ -41,6 +41,7 @@ const client = new Client({
 // https://www.npmjs.com/package/@replit/database
 // const db = new Database();
 const channelId = process.env.channelId;
+const guildId = process.env.guildId;
 
 // const keep_alive = require('./keep_alive.js')
 
@@ -67,7 +68,6 @@ client.on("interactionCreate", async (interaction) => {
     interaction.customId
   );
 
-  // TODO test this, i think it can fail if the thread is not in cache
   let thread = interaction.channel.threads.cache.find(
     (th, id) => id === threadId
   );
@@ -80,11 +80,16 @@ client.on("interactionCreate", async (interaction) => {
 
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
-      const accessLog = await AccessLog.for(thread, {
-        messageId: accessLogMessageId,
-      });
+      let couldAddMember = await addMember(
+        thread,
+        accessLogMessageId,
+        author.user
+      );
 
-      let couldAddMember = await accessLog.log(author.user);
+      // await thread.send({
+      //   content: t("Check out this sale, {{{user}}}!", { user: authorMention }),
+      //   ephemeral: true,
+      // });
 
       let message = couldAddMember
         ? t("You have been granted access to <#{{threadId}}>", {
@@ -107,7 +112,7 @@ client.on("interactionCreate", async (interaction) => {
       });
     }
   } else {
-    console.log(`[${Clock.now()}] ERROR: ${threadName} not found!`);
+    console.log(`[${now()}] ERROR: ${threadName} not found!`);
 
     await interaction.reply({
       content: t(
@@ -178,11 +183,11 @@ client.on("interactionCreate", async (interaction) => {
 
       await thread.send(firstMessage);
 
-      const accessLog = await AccessLog.for(thread);
+      let accessLogMessage = await createAccessLogMessage(thread);
 
-      await accessLog.log(author.user);
+      await addMember(thread, accessLogMessage.id, author.user);
 
-      let customId = `${VERSION}#${thread.id}#${accessLog.id()}`;
+      let customId = `${VERSION}#${thread.id}#${accessLogMessage.id}`;
 
       let firstRow = new MessageActionRow().addComponents(
         new MessageButton()
@@ -207,12 +212,81 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
+const addMember = async (thread, accessLogMessageId, user) => {
+  try {
+    let accessLogMessage = await thread.messages.fetch(accessLogMessageId, {
+      cache: false,
+      force: true,
+    });
+
+    let accessLog = `${accessLogMessage.content}\r\n\[${now()}] <@${
+      user.id
+    }\> con mucha fruta para que se llene rapido y se rompa porque es lo que buscamos para que se cree otro mensjae con los nuevos registros y sea mas facil tener una lista enlazada con todo con mucha fruta para que se llene rapido y se rompa porque es lo que buscamos para que se cree otro mensjae con los nuevos registros y sea mas facil tener una lista enlazada con todocon mucha fruta para que se llene rapido y se rompa porque es lo que buscamos para que se cree otro mensjae con los nuevos registros y sea mas facil tener una lista enlazada con todo`;
+
+    if (accessLog.length <= 1900) {
+      await accessLogMessage.edit({
+        content: accessLog,
+      });
+    } else {
+      // TODO we must wrap this with an AccessLogMessage class
+      let nextAccessLogId = getNextAccessLogId(accessLogMessage);
+
+      if (!nextAccessLogId) {
+        let newAccessLogMessage = await createAccessLogMessage(thread);
+
+        await accessLogMessage.edit({
+          content: `${accessLogMessage.content}\r\n${buildMessageLink(
+            newAccessLogMessage.id
+          )}`,
+        });
+
+        nextAccessLogId = newAccessLogMessage.id;
+      }
+
+      addMember(thread, nextAccessLogId, user);
+    }
+
+    return true;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 const parseCustomId = (customId) => {
   let shards = customId.split("#");
 
   if (shards.length > 2) return shards;
 
   return ["v0.4.0", shards[0], shards[1]];
+};
+
+const now = () => {
+  return moment(Date.now())
+    .tz("America/Argentina/Buenos_Aires")
+    .format("YYYY-MM-DD HH:mm:ss");
+};
+
+const createAccessLogMessage = async (thread) => {
+  return await thread.send("Access Log:");
+};
+
+const buildMessageLink = (messageId) => {
+  return `Next log: https://discord.com/channels/${channelId}/${guildId}/${messageId}`;
+};
+
+const getNextAccessLogId = (message) => {
+  let regexp =
+    /https:\/\/discord.com\/channels\/([0-9]+)\/([0-9]+)\/(?<messageId>[0-9]+)/;
+
+  try {
+    let {
+      groups: { messageId },
+    } = regexp.exec(message.content);
+
+    return messageId;
+  } catch (e) {
+    return false;
+  }
 };
 
 client.login(process.env.token);

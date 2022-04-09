@@ -1,18 +1,17 @@
 {
-	"Hello! I'm alive! I'm logged in as {{name}}": "Hello! I'm alive! I'm logged in as {{name}}",
 	"Check out this sale, {{{user}}}!": "Check out this sale, {{{user}}}!",
-	"You have been granted access to {{threadName}}": "You have been granted access to {{threadName}}",
-	"You are already suscribed to {{threadName}}": "You are already suscribed to {{threadName}}",
+	"You have been granted access to <#{{threadId}}>": "You have been granted access to <#{{threadId}}>",
+	"You are already suscribed to <#{{threadId}}>": "You are already suscribed to <#{{threadId}}>",
 	"ERROR: {{threadName}} not found!": "ERROR: {{threadName}} not found!",
 	"{{threadName}} not found. Please contact the guild's administrators": "{{threadName}} not found. Please contact the guild's administrators",
 	"Sorry {{{user}}} I'm not allowed to listen to threads": "Sorry {{{user}}}, I'm not allowed to listen to threads",
 	"View Sale": "View Sale",
-	"**{{text}}**. Thank you {{{user}}} for sharing!": "**{{text}}**. Thank you {{{user}}} for sharing!",
+	"**{{text}}**. Thank you {{{user}}}!": "**{{text}}**. Thank you {{{user}}}!",
 	"com.sale.name": "sale",
 	"com.sale.desc": "Adds a new sale to your channel!",
 	"com.sale.options.public.name": "public",
 	"com.sale.options.public.desc": "This is the public text of your sale. Please, **don't share** links or promo codes here!",
 	"com.sale.options.private.name": "private",
 	"com.sale.options.private.desc": "This is the private text of your sale. You can share links and promo codes here!",
-	"Successfully registered application commands": "Successfully registered application commands"
+	"Sorry, an error has occured. Please notify your guild's administrators.": "Sorry, an error has occured. Please notify your guild's administrators."
 }
