@@ -32,6 +32,7 @@ RUN addgroup --gid "${GID}" -S "${GRP}" &>/dev/null || true; \
 
 USER ${UID}:${GID}
 
+COPY ./helpers ${NODE_APP}/helpers
 COPY ./locales ${NODE_APP}/locales
 COPY ./services ${NODE_APP}/services
 COPY ./deploy-commands.js ./i18n.config.js ./index.js ./package.json ./yarn.lock ./docker/production/node/start.sh ${NODE_APP}/
