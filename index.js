@@ -1,8 +1,8 @@
 /**
  * SalesManager Discord Bot
- * version: 0.4.1
+ * version: 0.5.0
  * authors: la-logia-tetona
- * last update: 2022-04-06T12:00:00-03:00
+ * last update: 2022-04-09T21:00:00-03:00
  */
 
 const VERSION = "v0.5.0";
