@@ -15,8 +15,8 @@ const _string = require("underscore.string");
 const i18n = require("./i18n.config.js");
 const LocaleService = require("./services/localeService");
 
-const AccessLog = require("./helpers/AccessLog");
-const Clock = require("./helpers/Clock");
+const AccessLog = require("./helpers/AccessLog.js");
+const Clock = require("./helpers/Clock.js");
 
 const localeService = new LocaleService(i18n);
 localeService.setLocale(process.env.locale || "en");
