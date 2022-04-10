@@ -1,3 +1,5 @@
+const { Util } = require("discord.js");
+
 class AccessLogMessage {
   constructor(message) {
     this.message = message;
@@ -88,7 +90,7 @@ class AccessLogMessage {
 
   async _addContent(content) {
     await this.message.edit({
-      content: `${this.message.content}${content}`,
+      content: Util.cleanContent(this.message.content, this.thread()) + content,
     });
   }
 }
