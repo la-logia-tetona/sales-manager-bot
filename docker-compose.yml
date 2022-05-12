@@ -1,10 +1,10 @@
 version: '3'
 services:
   node:
-    env_file: docker/development/.env
+    env_file: docker/production/.envLogia
     build:
       context: .
-      dockerfile: docker/development/node/Dockerfile
+      dockerfile: docker/production/node/Dockerfile
       args:
         NODE_VERSION: "16"
         UID: 1000
@@ -12,3 +12,11 @@ services:
     volumes:
       - .:/app
     command: sh -c "node index.js"
+  concurrency:
+    build:
+      context: .
+      dockerfile: concurrency/Dockerfile
+    ports:
+      - "7007:7007"
+    volumes:
+      - .:/code

@@ -45,6 +45,8 @@ const channelId = process.env.channelId;
 
 let channel;
 
+const http = require('http');
+
 // https://gist.github.com/koad/316b265a91d933fd1b62dddfcc3ff584
 
 client.once("ready", async () => {
@@ -79,23 +81,66 @@ client.on("interactionCreate", async (interaction) => {
 
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
-      const accessLog = await AccessLog.for(thread, {
-        messageId: accessLogMessageId,
-      });
+      http.get('http://concurrency:7007/lock', async resp => {
+        try {
+          let body = '';
+          resp.setEncoding('utf-8');
+          for await (const chunk of resp) {
+              body += chunk;
+          }
 
-      let couldAddMember = await accessLog.log(author.user);
+          if (JSON.parse(body)['Message'] === 'available'){
+            const accessLog = await AccessLog.for(thread, {
+              messageId: accessLogMessageId,
+            });
+      
+            let couldAddMember = await accessLog.log(author.user);
+      
+            let message = couldAddMember
+              ? t("You have been granted access to <#{{threadId}}>", {
+                  threadId: threadId,
+                })
+              : t(
+                  "Sorry, an error has occured. Please notify your guild's administrators."
+                );
+      
+            await interaction.reply({
+              content: message,
+              ephemeral: true,
+            });
+            
+            http.get('http://concurrency:7007/unlock', async resp => {
+              try {
+                let body = '';
+                resp.setEncoding('utf-8');
+                for await (const chunk of resp) {
+                    body += chunk;
+                }
+                if (JSON.parse(body)['Message'] !== 'unlocked'){
+                  await interaction.reply({
+                    content: t("notUnlocked"),
+                    ephemeral: true,
+                  });
+                }
+              } catch (e) {
+                await interaction.reply({
+                  content: t("notUnlocked"),
+                  ephemeral: true,
+                });
+                console.log('ERROR', e);
+              }
+            });
+          
+          } else {
+            await interaction.reply({
+              content: t("fasterTeton"),
+              ephemeral: true,
+            });
+          }
 
-      let message = couldAddMember
-        ? t("You have been granted access to <#{{threadId}}>", {
-            threadId: threadId,
-          })
-        : t(
-            "Sorry, an error has occured. Please notify your guild's administrators."
-          );
-
-      await interaction.reply({
-        content: message,
-        ephemeral: true,
+        } catch (e) {
+            console.log('ERROR', e);
+        }
       });
     } else {
       await interaction.reply({
@@ -117,6 +162,20 @@ client.on("interactionCreate", async (interaction) => {
     });
   }
 });
+
+function doRequest() {
+  return new Promise ((resolve, reject) => {
+    let req = http.request(options);
+
+    req.on('response', res => {
+      resolve(res);
+    });
+
+    req.on('error', err => {
+      reject(err);
+    });
+  }); 
+}
 
 // https://discord.com/developers/docs/interactions/application-commands#slash-commands
 // https://discordjs.guide/creating-your-bot/creating-commands.html#command-deployment-script
