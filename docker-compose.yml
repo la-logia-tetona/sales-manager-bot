@@ -1,7 +1,7 @@
 version: '3'
 services:
   node:
-    env_file: docker/production/.envLogia
+    env_file: docker/production/.env
     build:
       context: .
       dockerfile: docker/production/node/Dockerfile

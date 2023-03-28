@@ -254,13 +254,17 @@ client.on("interactionCreate", async (interaction) => {
       interaction.deferReply();
       interaction.deleteReply();
 
-      await interaction.channel.send({
+      const channelMessage = await interaction.channel.send({
         content: t("**{{text}}**. Thank you {{{user}}}!", {
           text: threadName,
           user: authorMention,
         }),
         components: [firstRow],
       });
+
+      const compre = await channelMessage.guild.emojis.fetch('911372357099225168',{cache:true,force:true});
+      await channelMessage.react(compre);
+
     } else {
     }
   }
