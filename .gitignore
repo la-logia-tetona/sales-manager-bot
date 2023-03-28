@@ -1,0 +1,4 @@
+docker/production/.env
+docker/production/.envLogia
+docker/development/.env
+node_modules

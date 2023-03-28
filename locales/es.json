@@ -1,0 +1,19 @@
+{
+	"Check out this sale, {{{user}}}!": "¡Mirá esta oferta, {{{user}}}!",
+	"You have been granted access to <#{{threadId}}>": "Has obtenido acceso a <#{{threadId}}>",
+	"You are already suscribed to <#{{threadId}}>": "Ya estás suscrito a <#{{threadId}}>",
+	"ERROR: {{threadName}} not found!": "ERROR: ¡{{threadName}} no encontrado!",
+	"{{threadName}} not found. Please contact the guild's administrators": "{{threadName}} no encontrado. Por favor, comunicate con los administradores del servidor.",
+	"Sorry {{{user}}}, I'm not allowed to listen to threads": "Lo siento {{{user}}}, no tengo permitido responder desde hilos",
+	"View Sale": "Ver Oferta",
+	"**{{text}}**. Thank you {{{user}}}!": "**{{text}}**. ¡Gracias {{{user}}}!",
+	"fasterTeton":"Hubo un teton mas rapido, dale Ver Oferta de nuevo.",
+	"notUnlocked":"Reportar a los admins que no puede accederse al thread.",
+	"com.sale.name": "oferton",
+	"com.sale.desc": "¡Agrega una nueva oferta a tu canal!",
+	"com.sale.options.public.name": "publico",
+	"com.sale.options.public.desc": "El texto público de tu oferta. ¡Por favor, acá **no compartas** enlaces ni códigos promocionales!",
+	"com.sale.options.private.name": "privado",
+	"com.sale.options.private.desc": "El texto privado de tu oferta. ¡Acá podés compartir enlaces y códigos promocionales!",
+	"Sorry, an error has occured. Please notify your guild's administrators.": "Lo siento, ocurrió un error. Por favor, notificá a los administradores del servidor."
+}
