@@ -35,6 +35,7 @@ USER ${UID}:${GID}
 COPY ./helpers ${NODE_APP}/helpers
 COPY ./locales ${NODE_APP}/locales
 COPY ./services ${NODE_APP}/services
+COPY ./access-manager ${NODE_APP}/access-manager
 COPY ./deploy-commands.js ./i18n.config.js ./index.js ./package.json ./yarn.lock ./docker/production/node/start.sh ${NODE_APP}/
 
 WORKDIR ${NODE_APP}
