@@ -106,7 +106,7 @@ client.on("interactionCreate", async (interaction) => {
 });
 
 const unlock = () => {
-  http.get('http://localhost:7007/unlock', async resp => {
+  http.get('http://concurrency:7007/unlock', async resp => {
     try {
       let body = '';
       resp.setEncoding('utf-8');
@@ -130,7 +130,7 @@ const unlock = () => {
 }
 
 const tryAccess = (thread, accessLogMessageId, threadId, interaction, author) => {
-  http.get('http://localhost:7007/lock', async resp => {
+  http.get('http://concurrency:7007/lock', async resp => {
     try {
       let body = '';
       resp.setEncoding('utf-8');
