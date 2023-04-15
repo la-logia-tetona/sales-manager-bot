@@ -17,6 +17,7 @@ const LocaleService = require("./services/localeService");
 
 const AccessLog = require("./helpers/AccessLog");
 const Clock = require("./helpers/Clock");
+const AccessManager = require("./access-manager/AccessManager");
 
 const localeService = new LocaleService(i18n);
 localeService.setLocale(process.env.locale || "en");
@@ -82,67 +83,7 @@ client.on("interactionCreate", async (interaction) => {
     // but if they are not members yet we must notify them
     if (!isAlreadyMember) {
       await interaction.deferReply({ephemeral:true});
-      http.get('http://concurrency:7007/lock', async resp => {
-        try {
-          let body = '';
-          resp.setEncoding('utf-8');
-          for await (const chunk of resp) {
-              body += chunk;
-          }
-
-          if (JSON.parse(body)['Message'] === 'available'){
-            const accessLog = await AccessLog.for(thread, {
-              messageId: accessLogMessageId,
-            });
-      
-            let couldAddMember = await accessLog.log(author.user);
-      
-            let message = couldAddMember
-              ? t("You have been granted access to <#{{threadId}}>", {
-                  threadId: threadId,
-                })
-              : t(
-                  "Sorry, an error has occured. Please notify your guild's administrators."
-                );
-      
-            await interaction.editReply({
-              content: message,
-              ephemeral: true,
-            });
-            
-            http.get('http://concurrency:7007/unlock', async resp => {
-              try {
-                let body = '';
-                resp.setEncoding('utf-8');
-                for await (const chunk of resp) {
-                    body += chunk;
-                }
-                if (JSON.parse(body)['Message'] !== 'unlocked'){
-                  await interaction.editReply({
-                    content: t("notUnlocked"),
-                    ephemeral: true,
-                  });
-                }
-              } catch (e) {
-                await interaction.editReply({
-                  content: t("notUnlocked"),
-                  ephemeral: true,
-                });
-                console.log('ERROR', e);
-              }
-            });
-          
-          } else {
-            await interaction.editReply({
-              content: t("fasterTeton"),
-              ephemeral: true,
-            });
-          }
-
-        } catch (e) {
-            console.log('ERROR', e);
-        }
-      });
+      tryAccess(thread, accessLogMessageId, threadId, interaction, author);
     } else {
       await interaction.reply({
         content: t("You are already suscribed to <#{{threadId}}>", {
@@ -164,18 +105,87 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-function doRequest() {
-  return new Promise ((resolve, reject) => {
-    let req = http.request(options);
+const unlock = () => {
+  http.get('http://localhost:7007/unlock', async resp => {
+    try {
+      let body = '';
+      resp.setEncoding('utf-8');
+      for await (const chunk of resp) {
+          body += chunk;
+      }
+      if (JSON.parse(body)['Message'] !== 'unlocked'){
+        await interaction.editReply({
+          content: t("notUnlocked"),
+          ephemeral: true,
+        });
+      }
+    } catch (e) {
+      await interaction.editReply({
+        content: t("notUnlocked"),
+        ephemeral: true,
+      });
+      console.log('ERROR', e);
+    }
+  });
+}
 
-    req.on('response', res => {
-      resolve(res);
-    });
+const tryAccess = (thread, accessLogMessageId, threadId, interaction, author) => {
+  http.get('http://localhost:7007/lock', async resp => {
+    try {
+      let body = '';
+      resp.setEncoding('utf-8');
+      for await (const chunk of resp) {
+          body += chunk;
+      }
+      result = JSON.parse(body)['Message'] === 'available';
 
-    req.on('error', err => {
-      reject(err);
-    });
-  }); 
+      if (result){
+        const minutesToAccess = await AccessManager.canAccess(thread, accessLogMessageId, interaction);
+        if (minutesToAccess < 0){
+            await interaction.editReply({
+              content: t("cantAccess"),
+              ephemeral: true,
+            });
+          }
+        else if (minutesToAccess > 0) {
+          await interaction.editReply({
+            content: t("retryIn", {
+              remainingMinutes: minutesToAccess,
+            }),
+            ephemeral: true,
+          }); 
+        }
+        else {
+          const accessLog = await AccessLog.for(thread, {
+            messageId: accessLogMessageId,
+          });
+    
+          let couldAddMember = await accessLog.log(author.user);
+    
+          let message = couldAddMember
+            ? t("You have been granted access to <#{{threadId}}>", {
+                threadId: threadId,
+              })
+            : t(
+                "Sorry, an error has occured. Please notify your guild's administrators."
+              );
+    
+          await interaction.editReply({
+            content: message,
+            ephemeral: true,
+          });
+        }
+        unlock();
+      } else {
+        await interaction.editReply({
+          content: t("fasterTeton"),
+          ephemeral: true,
+        });
+      }
+    } catch (e) {
+      console.log('ERROR', e);
+    }
+  });
 }
 
 // https://discord.com/developers/docs/interactions/application-commands#slash-commands

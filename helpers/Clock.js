@@ -7,6 +7,18 @@ class Clock {
   static now(format = "YYYY-MM-DD HH:mm:ss") {
     return moment(Date.now()).tz(tz).format(format);
   }
+
+  static nowMoment() {
+    return moment(Date.now()).tz(tz);
+  }
+
+  static from(date) {
+    return moment(date).tz(tz);
+  }
+
+  static diffInMinutes(oldDate, newDate) {
+    return moment.duration(newDate.diff(oldDate)).minutes();
+  }
 }
 
 module.exports = Clock;

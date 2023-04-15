@@ -9,6 +9,8 @@
 	"**{{text}}**. Thank you {{{user}}}!": "**{{text}}**. ¡Gracias {{{user}}}!",
 	"fasterTeton": "Hubo un teton mas rapido, dale Ver Oferta de nuevo.",
 	"notUnlocked": "Reportar a los admins que no puede accederse al thread.",
+	"cantAccess": "No podes acceder a esta oferta.",
+	"retryIn": "Todavia no podes acceder a esta oferta. Vas a poder en {{remainingMinutes}} minutos.",
 	"com.sale.name": "oferton",
 	"com.sale.desc": "¡Agrega una nueva oferta a tu canal!",
 	"com.sale.options.public.name": "publico",
