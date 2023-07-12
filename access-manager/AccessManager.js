@@ -37,6 +37,7 @@ class AccessManager {
     static async canAccessByRole(interaction, creationTimestamp, accessTryTimestamp) {
 		const memberRoles = interaction.member.roles.cache;
         const minutesSinceCreation = Clock.diffInMinutes(creationTimestamp, accessTryTimestamp);
+        console.log("minutesSinceCreation", minutesSinceCreation);
         // Admin
         if (memberRoles.has('874980340475764769')) { return this.canAccessByDelay(minutesSinceCreation, 0); }
         // Legendario

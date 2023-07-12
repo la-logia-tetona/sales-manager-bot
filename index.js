@@ -141,6 +141,7 @@ const tryAccess = (thread, accessLogMessageId, threadId, interaction, author) =>
 
       if (result){
         const minutesToAccess = await AccessManager.canAccess(thread, accessLogMessageId, interaction);
+        console.log(minutesToAccess);
         if (minutesToAccess < 0){
             await interaction.editReply({
               content: t("cantAccess"),
