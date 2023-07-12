@@ -19,6 +19,11 @@ class AccessManager {
         .split(' ');
         const creationTimestamp = Clock.from(Date.parse(creationDate+"T"+creationTime));
 
+        console.log("threadName", thread.name);
+        console.log("creationDateAndTime", creationDate+"T"+creationTime);
+        console.log("creationTimestamp", creationTimestamp);
+        console.log("accessTryTimestamp", accessTryTimestamp);
+
         return AccessManager.canAccessByRole(interaction, creationTimestamp, accessTryTimestamp)
     }
 
