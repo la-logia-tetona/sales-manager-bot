@@ -17,7 +17,7 @@ class Clock {
   }
 
   static diffInMinutes(oldDate, newDate) {
-    return moment.duration(newDate.diff(oldDate)).minutes();
+    return moment.duration(newDate.diff(oldDate)).asMinutes();
   }
 }
 
