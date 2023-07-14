@@ -13,7 +13,7 @@ class Clock {
   }
 
   static from(date) {
-    return moment(date);
+    return moment.tz(date,tz);
   }
 
   static diffInMinutes(oldDate, newDate) {
