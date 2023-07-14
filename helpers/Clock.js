@@ -12,8 +12,8 @@ class Clock {
     return moment(Date.now()).tz(tz);
   }
 
-  static from(date) {
-    return moment.tz(date,tz);
+  static from(stringDate) {
+    return moment.tz(stringDate,tz);
   }
 
   static diffInMinutes(oldDate, newDate) {

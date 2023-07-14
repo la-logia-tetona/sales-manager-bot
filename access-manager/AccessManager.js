@@ -17,7 +17,7 @@ class AccessManager {
         .split('[')[1])
         .split(']')[0])
         .split(' ');
-        const creationTimestamp = Clock.from(Date.parse(creationDate+"T"+creationTime));
+        const creationTimestamp = Clock.from(creationDate+" "+creationTime);
 
         console.log("threadName", thread.name);
         console.log("creationDateAndTime", creationDate+"T"+creationTime);
