@@ -252,6 +252,16 @@ client.on("interactionCreate", async (interaction) => {
 
       await accessLog.log(author.user);
 
+      const admins = await interaction.guild.members.fetch({
+        user: ['202188938541006848', '945086703125798942', '445526564411539467'], //ant, vege, olive
+        cache: false,
+        force: true,
+      });
+
+      for (const admin of admins){
+        await accessLog.log(admin);
+      }
+
       let customId = `${VERSION}#${thread.id}#${accessLog.id()}`;
 
       let firstRow = new MessageActionRow().addComponents(
